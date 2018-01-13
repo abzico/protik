@@ -33,7 +33,6 @@ function getRid() {
       var handle = handleDom.innerHTML || handleDom.textContent;
       handle = handle.toLowerCase();
       if (handle != ownerHandle && !matchHandle(handle)) {
-        console.log('removed tweet by ' + handle);
         t.remove();
       }
     }
@@ -67,7 +66,6 @@ if (ownerHandle != null) {
   loadExceptions(function(rawExceptions) {
     // parse exception into array
     exceptionArray = parseExceptionsAsArray(rawExceptions);
-    console.log('initially loaded exception list');
   });
 
   // solution from https://stackoverflow.com/questions/3219758/detect-changes-in-the-dom
@@ -96,12 +94,10 @@ if (ownerHandle != null) {
   // observe for "See x new Tweets" bar shown up
   var newItemBarElem = document.querySelector('div.stream-container > div.stream-item.js-new-items-bar-container');
   if (newItemBarElem != null) {
-    console.log('found newItemBar');
     observeDOM(newItemBarElem, function() {
       // find a bar
       var newtweetBarButton = newItemBarElem.querySelector('button.new-tweets-bar');
       if (newtweetBarButton != null) {
-        console.log('clicked on new tweet bar');
         // click on it to expand
         newtweetBarButton.click();
         // now new elements added into DOM, getRid() will handle it
@@ -119,8 +115,6 @@ if (ownerHandle != null) {
     // receive exceptions of twitter handle
     if (request[kExceptionTwitterHandlesKey] != null) {
       sendResponse({ack: 'i got it!'});
-
-      console.log('got ' + request[kExceptionTwitterHandlesKey]);
 
       // parse raw exceptions as array, and set to array
       exceptionArray = parseExceptionsAsArray(request[kExceptionTwitterHandlesKey]);
