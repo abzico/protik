@@ -12,6 +12,7 @@ Protik is a chrome extention program that helps protect your flow of productivit
 * Automatically expand new tweet and immediately does its job normally to filter tweets for you
 * User can configure exception list to allow tweets for some users to be shown
 * It works for multiple chrome tabs you might have, they all take effect the same
+* You can just wait until there are more tweets, or scroll to the bottom normally. protik will apply filtering work for you automatically for both case.
 
 # Consider Donate
 
