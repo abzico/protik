@@ -6,6 +6,8 @@
 
 Protik is a chrome extention program that helps protect your flow of productivity from other Twitter users' views via tweets on Twitter feed.
 
+It only works at main page of twitter at [https://twitter.com](https://twitter.com) as it's the main entry or the door to rabbit hole linking to others. This will reduce much of tendency to click on any distracting tweets. Stay focused!
+
 # Features
 
 * Automatically remove tweet cards from all twitter users that are not in the exception list
