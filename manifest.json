@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+
+  "name": "protik",
+  "description": "This extension protects your flow of productivity from other people's views in Twitter feeds. This extension is also open source at https://github.com/abzico/protik. If you find it useful, please consider making a small donation directly to me at https://github.com/haxpor/donate.",
+  "author": "Wasin Thonkaew",
+  "version": "0.1",
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html",
+    "default_title": "Click to configure protik"
+  },
+  "content_scripts" : [
+    {
+      "js": ["inject.js"],
+      "matches": ["https://twitter.com/*"]
+    }
+ ],
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs"
+  ]
+}
