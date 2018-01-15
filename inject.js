@@ -64,8 +64,10 @@ function parseExceptionsAsArray(rawExceptions) {
 if (ownerHandle != null) {
   // firstly try to load exception list
   loadExceptions(function(rawExceptions) {
-    // parse exception into array
-    exceptionArray = parseExceptionsAsArray(rawExceptions);
+    if (rawExceptions != null) {
+      // parse exception into array
+      exceptionArray = parseExceptionsAsArray(rawExceptions);
+    }
   });
 
   // solution from https://stackoverflow.com/questions/3219758/detect-changes-in-the-dom
