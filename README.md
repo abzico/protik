@@ -1,6 +1,8 @@
-[![donate button](https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&amp;style=flat)](https://github.com/haxpor/donate)
+[![donate button](https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&amp;style=flat)](https://github.com/haxpor/donate) ![GPLv3 License](https://img.shields.io/badge/License-GPLv3-blue.svg)
 
-![GPLv3 License](https://img.shields.io/badge/License-GPLv3-blue.svg)
+<p align="center">
+  <img src="Marquee.png" title="protik promo logo">
+</p>
 
 # protik
 
