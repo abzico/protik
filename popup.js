@@ -53,12 +53,13 @@ function sendMessageToAllContentScripts(key, message, callback=null) {
 
 // save exception list of twitter handles as entered in textarea
 function saveExceptions() {
-  saveValueToStorage(kExceptionTwitterHandlesKey, stripCommentLines(textArea.value), function() {
+  var strippedTextAreaValue = stripCommentLines(textArea.value);
+  saveValueToStorage(kExceptionTwitterHandlesKey, strippedTextAreaValue, function() {
     console.log('failed to save exceptions to storage');
   }, function() {
     console.log('successfully saved exceptions to storage');
     // now send message to notify all twitter tabs
-    sendMessageToAllContentScripts(kExceptionTwitterHandlesKey, textArea.value, function() {
+    sendMessageToAllContentScripts(kExceptionTwitterHandlesKey, strippedTextAreaValue, function() {
       window.close();
     });
   })
