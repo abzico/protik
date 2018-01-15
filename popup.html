@@ -18,6 +18,21 @@
         justify-content: center;
         flex-direction: column;
       }
+
+      .waiting-label {
+        color: grey;
+      }
+
+      #sub1 {
+        display: inherit;
+      }
+      #sub2 {
+        display: none;
+      }
+      #sub3 {
+        margin-top: 7px;
+        display: none;
+      }
     </style>
 
     <script src="popup.js"></script>
@@ -26,10 +41,15 @@
   <body>
     <h1>Exception list</h1>
     <div id="container">
-      <div>
+      <div id="sub1">
+        <label class="waiting-label">Processing...</label>
+      </div>
+      <div id="sub2">
         <textarea rows="10" cols="50" id="textarea-exceptions" autofocus></textarea>
       </div>
-      <div><input type="button" value="Save" id="save-button"/></div>
+      <div id="sub3">
+        <input type="button" value="Save" id="save-button"/>
+      </div>
     </div>
   </body>
 </html>
