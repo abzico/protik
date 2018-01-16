@@ -15,7 +15,7 @@ var isUserHasLifetimeIAP = false; // caching
 function sendMessageToAllContentScripts(key, message, callback=null) {
   // we will send message to all twitter tab
   // so each one can update their filtering behavior accordingly
-  chrome.tabs.query({url: 'https://twitter.com/*'}, function(tabs) {
+  chrome.tabs.query({url: '*://twitter.com/*'}, function(tabs) {
     for (var i=0; i<tabs.length; i++) {
       // form message object
       var msg = {};
@@ -41,7 +41,7 @@ function sendMessageToAllContentScripts(key, message, callback=null) {
 function sendMessageToFirstFoundContentScripts(key, message, callback=null) {
   // we will send message to all twitter tab
   // so each one can update their filtering behavior accordingly
-  chrome.tabs.query({url: 'https://twitter.com/*'}, function(tabs) {
+  chrome.tabs.query({url: '*://twitter.com/*'}, function(tabs) {
     if (tabs.length > 0) {
       // just get the first tab
       var tab = tabs[0];
@@ -379,8 +379,7 @@ function flow() {
   });
 }
 
-// execute when DOM content is loaded
-document.addEventListener('DOMContentLoaded', function() {
+function preFlow() {
   textArea = document.getElementById('textarea-exceptions');
 
   // check if we have existing exception list
@@ -411,4 +410,9 @@ document.addEventListener('DOMContentLoaded', function() {
   setTimeout(function() {
     document.getElementById('container').style.display = 'flex';
   }, 100);
+}
+
+// execute when DOM content is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  preFlow();
 });

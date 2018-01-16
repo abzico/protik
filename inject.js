@@ -150,6 +150,17 @@ if (ownerHandle != null) {
         console.log('user cancelled iap widow, or failed to buy');
       }, function(response) {
         console.log('bought iap:', response);
+
+        // save status to storage
+        saveValueToStorage(constants.storageKeys.kUserPurchasedLifetimeIAP, true, function() {
+          console.log('cant save purchasing status to storage');
+        }, function() {
+          console.log('saved purchasing status to storage.');
+          // directly set limit flag
+          volatileIsGetRidLimit = false;
+          // immediately apply getRid()
+          getRid();
+        });
       });
     }
     // execute getRid()

@@ -24,19 +24,19 @@
     "default_popup": "popup.html",
     "default_title": "Click to configure protik"
   },
-  "content_scripts" : [
+  "content_scripts": [
     {
       "js": ["buy.js", "constants.js", "storage.js", "api.js", "inject.js"],
-      "matches": ["https://twitter.com/*"]
+      "matches": [ "*://twitter.com/*" ]
     }
- ],
- "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgal5a2NCImNLj5jaLOSrckEFGNNZMMyYBHKg3W8xNgLg7tx6LJJu8vgQDpTu3O87jVvpJ3vkojQT4ap3PXo5TUxj8S0vIz0nMIoER+1qDa+8IG58xpRu4sAedxBq84vgS5rbkphIptK61t8Vtaj+2NX4FY36aiWnTa0mwI57toxW7+79KwUfVhzt+iJwMKeSK+yD9J7zfYriNAGlVWbw485IB3XEPLM1M0s1g6dczN3/Md2e/7Ir6KzroLDv34Hcs6TJ6Aih4WbMoHH3+vvKXvkMB9TOl9xBCMneZJ3/egulswmNtj+DvohtElss8uEiZaDJi9OLyknAaZKp/eF+PwIDAQAB",
- "oauth2": {
-  "client_id": "189524929570-cpr5nr7hnd2daqqhdcvqf6m8qlgmerl7.apps.googleusercontent.com",
-  "scopes": [
-    "https://www.googleapis.com/auth/chromewebstore.readonly"
-  ]
- },
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgal5a2NCImNLj5jaLOSrckEFGNNZMMyYBHKg3W8xNgLg7tx6LJJu8vgQDpTu3O87jVvpJ3vkojQT4ap3PXo5TUxj8S0vIz0nMIoER+1qDa+8IG58xpRu4sAedxBq84vgS5rbkphIptK61t8Vtaj+2NX4FY36aiWnTa0mwI57toxW7+79KwUfVhzt+iJwMKeSK+yD9J7zfYriNAGlVWbw485IB3XEPLM1M0s1g6dczN3/Md2e/7Ir6KzroLDv34Hcs6TJ6Aih4WbMoHH3+vvKXvkMB9TOl9xBCMneZJ3/egulswmNtj+DvohtElss8uEiZaDJi9OLyknAaZKp/eF+PwIDAQAB",
+  "oauth2": {
+    "client_id": "189524929570-cpr5nr7hnd2daqqhdcvqf6m8qlgmerl7.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/chromewebstore.readonly"
+    ]
+  },
   "permissions": [
     "identity",
     "storage",
