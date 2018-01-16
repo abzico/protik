@@ -156,11 +156,14 @@ if (ownerHandle != null) {
           console.log('cant save purchasing status to storage');
         }, function() {
           console.log('saved purchasing status to storage.');
-          // directly set limit flag
-          volatileIsGetRidLimit = false;
-          // immediately apply getRid()
-          getRid();
         });
+
+        // for safety as if saving to storage might have error
+        // always relax getRid() limit and immediately call getRid()
+        // directly set limit flag
+        volatileIsGetRidLimit = false;
+        // immediately apply getRid()
+        getRid();
       });
     }
     // execute getRid()
