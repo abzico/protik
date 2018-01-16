@@ -6,7 +6,8 @@ var constants = {
     kExceptionTwitterHandlesKey: 'exception-twitter-handles',
     kUserOAuthToken: 'userOAuthToken',
     kUserLicense: 'userLicense',
-    kIsGetRidLimit: 'userIsGetRidLimit'
+    kUserVerifiedLicense: 'userVerifiedLicense',
+    kUserPurchasedLifetimeIAP: 'userPurchasedLifetimeIAP'
   },
 
   trialSettings: {
@@ -18,7 +19,8 @@ var constants = {
   messageKey: {
     kExceptions: 'msg-exception',
     kIntendToBuyIAP: 'msg-intend-buyiap',
-    kExecuteGetRid: 'msg-execute-getrid'
+    kExecuteGetRid: 'msg-execute-getrid',
+    kNotifyUpdatedGetRidLimit: 'msg-notify-getrid-limit'
   },
 
   kTextAreaInitialValue: "Enter twitteruser1, twitteruser2. Case-insensitive."

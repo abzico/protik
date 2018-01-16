@@ -1,4 +1,4 @@
-// dependency: constants.js, storage.js
+// dependency: constants.js, storage.js, api.js
 
 var textArea = null;
 var exceptionList = [];
@@ -23,14 +23,7 @@ function sendMessageToAllContentScripts(key, message, callback=null) {
       msg['message'] = message;
 
       // send message to all twitter tabs
-      chrome.tabs.sendMessage(tabs[i].id, msg, null, function(response) {
-        if (response != null && !chrome.runtime.lastError) {
-          console.log('sender got ack back: ' + response.ack);
-        }
-        else if(chrome.runtime.lastError) {
-          console.log('error while waiting for ack:', chrome.runtime.lastError);
-        }
-      });
+      chrome.tabs.sendMessage(tabs[i].id, msg);
     }
 
     if (callback) {
@@ -59,14 +52,7 @@ function sendMessageToFirstFoundContentScripts(key, message, callback=null) {
       msg['message'] = message;
 
       // send message to all twitter tabs
-      chrome.tabs.sendMessage(tab.id, msg, null, function(response) {
-        if (response != null && !chrome.runtime.lastError) {
-          console.log('sender got ack back: ' + response.ack);
-        }
-        else if(chrome.runtime.lastError) {
-          console.log('error while waiting for ack:', chrome.runtime.lastError);
-        }
-      });
+      chrome.tabs.sendMessage(tab.id, msg);
     }
     else {
       console.log('cannot find any twitter tabs');
@@ -154,11 +140,11 @@ function askForUserOAuthTokenButMightTriggerAllowPermPopupIfFailed(failureCallba
  */
 function enableFunctioningUI() {
   document.getElementById('sub1').style.display = 'none';
-  document.getElementById('note-label').style.display = 'inherit';
-  document.getElementById('sub2').style.display = 'inherit';
+  document.getElementById('note-label').style.display = 'initial';
+  document.getElementById('sub2').style.display = 'initial';
   var sub3 = document.getElementById('sub3');
-  sub3.style.display = 'inherit';
-  sub3.disabled = false;
+  sub3.style.display = 'initial';
+  //sub3.disabled = false;
   document.getElementById('sub4').style.display = 'none';
   //document.getElementById('textarea-exceptions').readOnly = 'false';
 }
@@ -168,12 +154,12 @@ function enableFunctioningUI() {
  */
 function disableFunctioningUI() {
   document.getElementById('sub1').style.display = 'none';
-  document.getElementById('note-label').style.display = 'inherit';
-  document.getElementById('sub2').style.display = 'inherit';
+  document.getElementById('note-label').style.display = 'initial';
+  document.getElementById('sub2').style.display = 'initial';
   var sub3 = document.getElementById('sub3');
-  sub3.style.display = 'inherit';
+  sub3.style.display = 'initial';
   //sub3.disabled = true;
-  document.getElementById('sub4').style.display = 'inherit';
+  document.getElementById('sub4').style.display = 'initial';
   //document.getElementById('textarea-exceptions').readOnly = 'true';
 }
 
@@ -223,7 +209,6 @@ function verifyLicense(licenseObject) {
 }
 
 function requestLicenseFlow(token) {
-
   // check license object from storage first
   loadUserLicenseObject(function(licenseObject) {
     // no license object, then make a request
@@ -237,7 +222,7 @@ function requestLicenseFlow(token) {
           console.log('got license object:', licenseObject);
 
           // save license to storage
-          saveValueToStorage(kUserLicense, licenseObject,
+          saveValueToStorage(constants.storageKeys.kUserLicense, licenseObject,
             function() {
               console.log('failed to save license object to storage.');
             },
@@ -290,29 +275,6 @@ function getAllActiveIAPs(failure=null, complete=null) {
   });
 }
 
-/**
- * Verify that user has purchased lifetime IAP.
- * Note: It's only one IAP for lifetime usage of this chrome extension. So we could hard-coded this a little bit, no need to query for list of active IAPs. I know it's not that cleanest, but balance and compromise for fast turn around :)
- * @param {function} callback (Optional) Callback function returning verifying result of whether or not user has purchased lifetime IAP. If there's error or user hasn't purchased yet, it return false in callback, otherwise return true. Callback is in function(purchased) {...} in which 'purchased' is boolean.
- */
-function verifyPurchasedLifetimeIAP(callback=null) {
-  google.payments.inapp.getPurchases({
-    'parameters': {'env': 'prod'},
-    'success': function(response) {
-      console.log(response);
-      if (response.response.details.length == 0) {
-        if (callback) callback(false);
-      }
-      else {
-        if (callback) callback(true);
-      }
-    },
-    'failure': function() {
-      if (callback) callback(false);
-    }
-  });
-}
-
 function sendMessageIntendToBuyIAP() {
   // send message to notify content script of the first twitter tab we found to initiaite the buying flow by executing API
   // if initiate here, buying popup will be closed immediately as background script ends because its popup window automatically closed
@@ -331,8 +293,94 @@ function goToTrialPage() {
   document.getElementById('trial-page').style.display = 'flex';
 }
 
+/**
+ * Begin verifying purhcased lifetime iAP flow.
+ * @param {function} ifNotPurchasedCallback (optional) Callback if user didn't purchase lifetime iAP yet, then after finishes verifying iAP it will call this callback.
+ */
+function verifyPurchasedLifetimeIAPFlow(ifNotPurchasedCallback=null) {
+  // try to read purchased iap status from storage to avoid making API call
+  loadUserPurchasedLifetimeIAP(function(cached_purchased) {
+    if (cached_purchased == null) {
+      // (higher priority) check lifetime iap first
+      // verify purchasing of lifetime iap
+      verifyPurchasedLifetimeIAP(function(purchased) {
+        console.log(purchased ? "user purchased lifetime iap" : "user not yet purchase lifetime iap");
+        
+        // save to storage
+        saveValueToStorage(constants.storageKeys.kUserPurchasedLifetimeIAP, purchased, function() {
+          console.log('failed to save lifetime iap status to storage.');
+        }, function() {
+          console.log('successfully saved lifetime iap status to storage');
+
+          // notify to content scripts
+          sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null, function() {
+            console.log('notified to content scripts for updated purchased iAP flag');
+          });
+        });
+
+        // if user didn't purchase yet, then follow-through with user's callback
+        if (!purchased) {
+          if (ifNotPurchasedCallback) ifNotPurchasedCallback();
+        }
+        else {
+          // enable UI
+          enableFunctioningUI();
+          console.log('enabled ui');
+        }
+      });
+    }
+    // already in storage, then follow through use's callback
+    else if (!cached_purchased) {
+      if (ifNotPurchasedCallback) ifNotPurchasedCallback();
+    }
+    else if (cached_purchased) {
+      // enable UI
+      enableFunctioningUI();
+      console.log('enabled ui');
+    }
+  });
+}
+
+function flow() {
+  // load from storage for user's token to reduce API call to get token
+  loadCachedUserOAuthTokenFromStorage(function(token) {
+    // if found token saved in storage, then we could skip calling `getAuthToken()` function
+    // and directly verfy license (trial period checking)
+    if (token) {
+      // begin verifying lifetime iap flow
+      verifyPurchasedLifetimeIAPFlow(function() {
+        // begin request license flow
+        requestLicenseFlow(token);
+      });
+    }
+    // then ask for permission from user
+    else {
+      askForUserOAuthTokenButMightTriggerAllowPermPopupIfFailed(function() {
+        console.log('failed to get token both silently and explicityly');
+      }, function(token) {
+        console.log('got token!');
+
+        // save token to storage
+        saveValueToStorage(constants.storageKeys.kUserOAuthToken, token,
+          function() {
+            console.log('failed to save token to storage');
+          },
+          function() {
+            console.log('successfully saved token to storage');
+            // begin verifying lifetime iap flow
+            verifyPurchasedLifetimeIAPFlow(function() {
+              // begin request license flow
+              requestLicenseFlow(token);
+            });
+          }
+        );
+      });
+    }
+  });
+}
+
 // execute when DOM content is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   textArea = document.getElementById('textarea-exceptions');
 
   // check if we have existing exception list
@@ -354,38 +402,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('buy-lifetime2').addEventListener('click', sendMessageIntendToBuyIAP, false);
   // listen to back button of trial-page
   document.getElementById('back-button').addEventListener('click', goBackFromTrialPage, false);
-});
 
-verifyPurchasedLifetimeIAP(function(purchased) {
-  console.log(purchased);
-});
+  // begin the flow
+  flow();
 
-// load from storage for user's token to reduce API call to get token
-loadCachedUserOAuthTokenFromStorage(function(token) {
-  // if found token saved in storage, then we could skip calling `getAuthToken()` function
-  // and directly verfy license (trial period checking)
-  if (token) {
-    // begin request license flow
-    requestLicenseFlow(token);
-  }
-  // then ask for permission from user
-  else {
-    askForUserOAuthTokenButMightTriggerAllowPermPopupIfFailed(function() {
-      console.log('failed to get token both silently and explicityly');
-    }, function(token) {
-      console.log('got token!');
-
-      // save token to storage
-      saveValueToStorage(constants.storageKeys.kUserOAuthToken, token,
-        function() {
-          console.log('failed to save token to storage');
-        },
-        function() {
-          console.log('successfully saved token to storage');
-          // begin request license flow
-          requestLicenseFlow(token);
-        }
-      );
-    });
-  }
+  // fix: window popup resizes
+  // see https://bugs.chromium.org/p/chromium/issues/detail?id=428044
+  setTimeout(function() {
+    document.getElementById('container').style.display = 'flex';
+  }, 100);
 });

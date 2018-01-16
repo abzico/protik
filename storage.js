@@ -31,6 +31,26 @@ function loadUserLicenseObject(callback) {
 }
 
 /**
+ * Load user's verified license, then return via callback.
+ * @param {function} callback Callback function in function(verified) { ... }. Return null if there's error or target key cannot be found.
+ */
+function loadUserVerifiedLicense(callback) {
+  chrome.storage.sync.get(constants.storageKeys.kUserVerifiedLicense, function(items) {
+    callback(chrome.runtime.lastError ? null : items[constants.storageKeys.kUserVerifiedLicense]);
+  });
+}
+
+/**
+ * Load user's purchased lifetime iAP status, then return via callback.
+ * @param {function} callback Callback function in function(purchased) { ... }. Return null if there's error or target key cannot be found.
+ */
+function loadUserPurchasedLifetimeIAP(callback) {
+  chrome.storage.sync.get(constants.storageKeys.kUserPurchasedLifetimeIAP, function(items) {
+    callback(chrome.runtime.lastError ? null : items[constants.storageKeys.kUserPurchasedLifetimeIAP]);
+  });
+}
+
+/**
  * Save data to storage.
  * @param {string} key Key of data
  * @param {any} Value Data to be saved to storage.

@@ -5,7 +5,7 @@
   "short_name": "protik",
   "description": "This extension protects your flow of productivity from other people's views in Twitter feeds.",
   "author": "Wasin Thonkaew",
-  "version": "0.2.0.1",
+  "version": "0.2.1.0",
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",

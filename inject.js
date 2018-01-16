@@ -1,4 +1,7 @@
-// dependency: constants.js, storage.js
+// dependency: constants.js, storage.js, api.js
+
+var volatileIsGetRidLimit = false;  // aim to use this variable as short period as much as possible, re-read from storage for two keys (kUserPurchasedLifetimeAPI and kUserVerifiedLicense; former has higher priority)
+var exceptionArray = [];
 
 // find owner username first
 var ownerHandleDom = document.querySelector('div.DashboardProfileCard-content span.username > b');
@@ -8,13 +11,11 @@ if (ownerHandleDom != null) {
   ownerHandle = ownerHandle.toLowerCase();
 }
 
-var exceptionArray = [];
-
-// get rid of tweets
+// get rid of tweets according to current limitation set
 function getRid() {
   // query dom element (twitter card) that is not you, yes, only show your tweets
   var tweets = document.querySelectorAll('div.tweet');
-  for (var i=0; i < tweets.length; i++) {
+  for (var i=0; i <tweets.length; i++) {
     var t = tweets[i];
 
     // find handle of such tweet
@@ -31,7 +32,8 @@ function getRid() {
 
 // check whether input handle matches any of exceptions
 function matchHandle(handle) {
-  for (var i=0; i<exceptionArray.length; i++) {
+  var limit = volatileIsGetRidLimit ? constants.trialSettings.kExceptionsLimit : exceptionArray.length;
+  for (var i=0; i<limit; i++) {
     if (handle == exceptionArray[i]) {
       return true;
     }
@@ -50,6 +52,27 @@ function parseExceptionsAsArray(rawExceptions) {
   return retTokens;
 }
 
+function updateGetRidLimitStatus() {
+  // we need to read from two keys from storage
+  // kUserPurchasedLifetimeAPI and kUserVerifiedLicense
+  // the first one has higher priority
+  loadUserPurchasedLifetimeIAP(function(purchased) {
+    if (purchased && volatileIsGetRidLimit) {
+      // no limit
+      volatileIsGetRidLimit = false;
+      // no need to check another one as this has higher priority
+      console.log('volatileIsGetRidLimit: ' + volatileIsGetRidLimit);
+    }
+    else {
+      // load kUserVerifiedLicense
+      loadUserVerifiedLicense(function(verified) {
+        volatileIsGetRidLimit = verified ? false : true;
+        console.log('volatileIsGetRidLimit: ' + volatileIsGetRidLimit);
+      });
+    }
+  });
+}
+
 // begin operation only if detect owner handle
 if (ownerHandle != null) {
   // firstly try to load exception list
@@ -59,6 +82,9 @@ if (ownerHandle != null) {
       exceptionArray = parseExceptionsAsArray(rawExceptions);
     }
   });
+
+  // update getRid() limit status flag
+  updateGetRidLimitStatus();
 
   // solution from https://stackoverflow.com/questions/3219758/detect-changes-in-the-dom
   // modified to fit our problem domain
@@ -107,7 +133,7 @@ if (ownerHandle != null) {
     console.log(request);
     // exception data
     if (request.key != null && request.key == constants.messageKey.kExceptions) {
-      sendResponse({ack: 'i got it!'});
+      //sendResponse({ack: 'i got it!'});
 
       // parse raw exceptions as array, and set to array
       exceptionArray = parseExceptionsAsArray(request.message);
@@ -117,7 +143,7 @@ if (ownerHandle != null) {
     }
     // user intends to buy iap
     else if (request.key != null && request.key == constants.messageKey.kIntendToBuyIAP) {
-      sendResponse({ack: 'i got that you wanna buy iap!'});
+      //sendResponse({ack: 'i got that you wanna buy iap!'});
 
       // buy lifetie iap
       buyLifetimeIAP(function() {
@@ -128,8 +154,13 @@ if (ownerHandle != null) {
     }
     // execute getRid()
     else if (request.key != null && request.key == constants.messageKey.kExecuteGetRid) {
-      sendResponse({ack: 'i got that you want to execute getRid()'});
+      //sendResponse({ack: 'i got that you want to execute getRid()'});
       getRid();
+    }
+    // notified with updated of purchase iAP status
+    else if (request.key != null && request.key == constants.messageKey.kNotifyUpdatedGetRidLimit) {
+      //sendResponse({ack: 'i got that you have updated something that affects getRid() limit'});
+      updateGetRidLimitStatus();
     }
   });
 }

@@ -78,3 +78,43 @@ function buyLifetimeIAP(failure=null, success=null) {
     }
   });
 }
+
+/**
+ * Verify that user has purchased lifetime IAP.
+ * Note: It's only one IAP for lifetime usage of this chrome extension. So we could hard-coded this a little bit, no need to query for list of active IAPs. I know it's not that cleanest, but balance and compromise for fast turn around :)
+ * @param {function} callback (Optional) Callback function returning verifying result of whether or not user has purchased lifetime IAP. If there's error or user hasn't purchased yet, it return false in callback, otherwise return true. Callback is in function(purchased) {...} in which 'purchased' is boolean.
+ */
+function verifyPurchasedLifetimeIAP(callback=null) {
+  google.payments.inapp.getPurchases({
+    'parameters': {'env': 'prod'},
+    'success': function(response) {
+      console.log(response);
+
+      // if there's some purchase list to check
+      if (response.response.details.length > 0) {
+        var found = false;
+        var list = response.response.details;
+        // check its response
+        for (var i=0; i<list.length; i++) {
+          var item = list[i];
+          if (item.sku == constants.trialSettings.kLifetimeSKU) {
+            found = true;
+            break;
+          }
+        }
+           
+        // returning result via callback
+        if (callback) {
+          callback(found);
+        }
+      }
+      // no purchase
+      else {
+        if (callback) callback(false);
+      }
+    },
+    'failure': function() {
+      if (callback) callback(false);
+    }
+  });
+}
