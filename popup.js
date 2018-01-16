@@ -68,6 +68,9 @@ function sendMessageToFirstFoundContentScripts(key, message, callback=null) {
         }
       });
     }
+    else {
+      console.log('cannot find any twitter tabs');
+    }
 
     if (callback) {
       callback();
@@ -188,11 +191,21 @@ function verifyLicense(licenseObject) {
     var daysAgoLicenseIssued = Date.now() - parseInt(licenseObject.createdTime, 10);
     daysAgoLicenseIssued = daysAgoLicenseIssued / 1000 / 60 / 60 / 24;
     var daysLeft = constants.trialSettings.kTrialPeriodDays - Math.floor(daysAgoLicenseIssued);
-    if (daysLeft <= constants.trialSettings.kTrialPeriodDays) {
+    if (daysLeft > 0) {
       // still within free trial period
       // now update UI for days-left
       var label = document.querySelector('#note-label > label');
-      label.innerHTML = label.innerHTML + " [" + daysLeft + " days left]";
+      label.innerHTML = label.innerHTML + " [<a href='#' id='days-left-anchor'>" + daysLeft + " days left</a>]";
+      // after we add make sure textarea still the one being focused
+      // note: need to wait very short time
+      setTimeout(function() {
+        document.getElementById('days-left-anchor').blur();
+        document.getElementById('textarea-exceptions').focus();
+      }, 120);
+      // add listener to it for user to be able to go to trial page for more information
+      document.getElementById('days-left-anchor').addEventListener('click', function() {
+        goToTrialPage();
+      });
       console.log("Free trial, still within trial period: " + daysLeft + " days left");
       return true;
     } else {
@@ -308,6 +321,16 @@ function sendMessageIntendToBuyIAP() {
   });
 }
 
+function goBackFromTrialPage() {
+  document.getElementById('trial-page').style.display = 'none';
+  document.getElementById('container').style.display = 'flex';
+}
+
+function goToTrialPage() {
+  document.getElementById('container').style.display = 'none';
+  document.getElementById('trial-page').style.display = 'flex';
+}
+
 // execute when DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
   textArea = document.getElementById('textarea-exceptions');
@@ -328,6 +351,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('save-button').addEventListener('click', saveExceptions, false);
   // listen to buy-lifetime click to buy iap
   document.getElementById('buy-lifetime').addEventListener('click', sendMessageIntendToBuyIAP, false);
+  document.getElementById('buy-lifetime2').addEventListener('click', sendMessageIntendToBuyIAP, false);
+  // listen to back button of trial-page
+  document.getElementById('back-button').addEventListener('click', goBackFromTrialPage, false);
 });
 
 verifyPurchasedLifetimeIAP(function(purchased) {
