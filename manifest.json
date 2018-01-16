@@ -5,7 +5,7 @@
   "short_name": "protik",
   "description": "This extension protects your flow of productivity from other people's views in Twitter feeds.",
   "author": "Wasin Thonkaew",
-  "version": "0.1.1",
+  "version": "0.2.0.1",
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",
@@ -16,13 +16,17 @@
     "512": "icon512.png"
   },
   "browser_action": {
-    "default_icon": "icon.png",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "64": "icon64.png"
+    },
     "default_popup": "popup.html",
     "default_title": "Click to configure protik"
   },
   "content_scripts" : [
     {
-      "js": ["inject.js"],
+      "js": ["buy.js", "constants.js", "storage.js", "api.js", "inject.js"],
       "matches": ["https://twitter.com/*"]
     }
  ],

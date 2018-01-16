@@ -22,9 +22,21 @@
       .waiting-label {
         color: grey;
       }
+      .expired-note {
+        color: red;
+      }
+      .note-label {
+        color: grey;
+        font-size: 11px;
+      }
 
       #sub1 {
         display: inherit;
+      }
+      #note-label {
+        display: none;
+        align-self: left;
+        margin-bottom: 7px;
       }
       #sub2 {
         display: none;
@@ -33,8 +45,16 @@
         margin-top: 7px;
         display: none;
       }
+      #sub4 {
+        margin-top: 5px;
+        display: none;
+      }
     </style>
 
+    <script src="buy.js"></script>
+    <script src="constants.js"></script>
+    <script src="storage.js"></script>
+    <script src="api.js"></script>
     <script src="popup.js"></script>
   </head>
 
@@ -44,11 +64,17 @@
       <div id="sub1">
         <label class="waiting-label">Processing...</label>
       </div>
+      <div id="note-label">
+        <label class="note-label">Enter <i>twitteruser1</i>, <i>twitteruser2</i>. Case-insensitive.</label>
+      </div>
       <div id="sub2">
         <textarea rows="10" cols="50" id="textarea-exceptions" autofocus></textarea>
       </div>
       <div id="sub3">
         <input type="button" value="Save" id="save-button"/>
+      </div>
+      <div id="sub4">
+        <label class="expired-note">Trial period has ended. You can still use it! But your <b>exception list</b> is limited to first 3 users.</br>Purchase <a href="#" id="buy-lifetime">here</a> to fully use it for lifetime without limitation.</label>
       </div>
     </div>
   </body>

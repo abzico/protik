@@ -1,3 +1,5 @@
+// dependency: constants.js, storage.js
+
 // find owner username first
 var ownerHandleDom = document.querySelector('div.DashboardProfileCard-content span.username > b');
 var ownerHandle = null;
@@ -7,18 +9,6 @@ if (ownerHandleDom != null) {
 }
 
 var exceptionArray = [];
-var kExceptionTwitterHandlesKey = 'exception-twitter-handles';
-
-/**
- * Load exception list from storage, then return via callback.
- * Note: This function also exists on popup.js, as we can't just wait script on popup.js to be loaded, it's too late unless we want to remove all tweets :]
- * @param {function} callback Callback function in function(exceptionsString) { ... }, return null if nothing
- */
-function loadExceptions(callback) {
-  chrome.storage.sync.get(kExceptionTwitterHandlesKey, function(items) {
-    callback(chrome.runtime.lastError ? null : items[kExceptionTwitterHandlesKey]);
-  })
-}
 
 // get rid of tweets
 function getRid() {
@@ -63,7 +53,7 @@ function parseExceptionsAsArray(rawExceptions) {
 // begin operation only if detect owner handle
 if (ownerHandle != null) {
   // firstly try to load exception list
-  loadExceptions(function(rawExceptions) {
+  loadExceptionsFromStorage(function(rawExceptions) {
     if (rawExceptions != null) {
       // parse exception into array
       exceptionArray = parseExceptionsAsArray(rawExceptions);
@@ -114,14 +104,31 @@ if (ownerHandle != null) {
 
   // listen to message sent by popup script
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    // receive exceptions of twitter handle
-    if (request[kExceptionTwitterHandlesKey] != null) {
+    console.log(request);
+    // exception data
+    if (request.key != null && request.key == constants.messageKey.kExceptions) {
       sendResponse({ack: 'i got it!'});
 
       // parse raw exceptions as array, and set to array
-      exceptionArray = parseExceptionsAsArray(request[kExceptionTwitterHandlesKey]);
+      exceptionArray = parseExceptionsAsArray(request.message);
 
       // apply new exceptions right away
+      getRid();
+    }
+    // user intends to buy iap
+    else if (request.key != null && request.key == constants.messageKey.kIntendToBuyIAP) {
+      sendResponse({ack: 'i got that you wanna buy iap!'});
+
+      // buy lifetie iap
+      buyLifetimeIAP(function() {
+        console.log('user cancelled iap widow, or failed to buy');
+      }, function(response) {
+        console.log('bought iap:', response);
+      });
+    }
+    // execute getRid()
+    else if (request.key != null && request.key == constants.messageKey.kExecuteGetRid) {
+      sendResponse({ack: 'i got that you want to execute getRid()'});
       getRid();
     }
   });
