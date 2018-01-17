@@ -277,7 +277,7 @@ function getAllActiveIAPs(failure=null, complete=null) {
 
 function sendMessageIntendToBuyIAP() {
   // send message to notify content script of the first twitter tab we found to initiaite the buying flow by executing API
-  // if initiate here, buying popup will be closed immediately as background script ends because its popup window automatically closed
+  // if initiate here, buying popup will be closed immediately as popup script ends because its popup window automatically closed
   sendMessageToFirstFoundContentScripts(constants.messageKey.kIntendToBuyIAP, null, function() {
     console.log('sent message successfully');
   });
