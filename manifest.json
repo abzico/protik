@@ -24,10 +24,13 @@
     "default_popup": "popup.html",
     "default_title": "Click to configure protik"
   },
+  "background": {
+    "scripts": [ "background.js" ]
+  },
   "content_scripts": [
     {
       "js": ["buy.js", "constants.js", "storage.js", "api.js", "inject.js"],
-      "matches": [ "*://twitter.com/*" ]
+      "matches": [ "https://twitter.com/*" ]
     }
   ],
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgal5a2NCImNLj5jaLOSrckEFGNNZMMyYBHKg3W8xNgLg7tx6LJJu8vgQDpTu3O87jVvpJ3vkojQT4ap3PXo5TUxj8S0vIz0nMIoER+1qDa+8IG58xpRu4sAedxBq84vgS5rbkphIptK61t8Vtaj+2NX4FY36aiWnTa0mwI57toxW7+79KwUfVhzt+iJwMKeSK+yD9J7zfYriNAGlVWbw485IB3XEPLM1M0s1g6dczN3/Md2e/7Ir6KzroLDv34Hcs6TJ6Aih4WbMoHH3+vvKXvkMB9TOl9xBCMneZJ3/egulswmNtj+DvohtElss8uEiZaDJi9OLyknAaZKp/eF+PwIDAQAB",
@@ -41,6 +44,8 @@
     "identity",
     "storage",
     "tabs",
+    "webNavigation",
+    "https://twitter.com/*",
     "https://www.googleapis.com/"
   ]
 }
