@@ -85,54 +85,12 @@ function stripCommentLines(message) {
   return strip;
 }
 
-/**
- * Try to request for user's oauth token. It might trigger allowing permission popup for user if it failed.
- * @param {function} failureCallback (optional) Callback when it failed. It's function() { ... }
- * @param {function} completeCallback (optional) Callback function when it succeeded. It's function(token) { ... }
- */
-function askForUserOAuthTokenButMightTriggerAllowPermPopupIfFailed(failureCallback=null, completeCallback=null) {
-  // try to get user's token silently
-  // note: we allow grace period until user click on our icon button thus it will *actually* check for user's token
-  // so as long as user doesn't click, he/she can continue using
-  chrome.identity.getAuthToken({'interactive': false}, function(token) {
-    // if fail to get, then we ask user to allow permission
-    if (token == null || chrome.runtime.lastError) {
-      console.log(chrome.runtime.lastError);
-      console.log('we need to explicitly ask for token');
-      
-      chrome.identity.getAuthToken({'interactive': true}, function(_token) {
-        // if failed
-        if (_token == null || chrome.runtime.lastError) {
-          if (failureCallback) {
-            failureCallback();
-          }
-        }
-        else if (_token) {
-          if (completeCallback) {
-            completeCallback();
-          }
-        }
-        // all othe cases
-        else {
-          if (failureCallback) {
-            failureCallback();
-          }
-        }
-      });
-    }
-    // got token
-    else if (token) {
-      if (completeCallback) {
-        completeCallback(token);
-      }
-    }
-    // all other cases
-    else {
-      if (failureCallback) {
-        failureCallback();
-      }
-    }
-  });
+function showOnlyProcessingLabelUI() {
+  document.getElementById('sub1').style.display = 'initial';
+  document.getElementById('note-label').style.display = 'none';
+  document.getElementById('sub2').style.display = 'none';
+  document.getElementById('sub3').style.display = 'none';
+  document.getElementById('sub4').style.display = 'none';
 }
 
 /**
