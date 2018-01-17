@@ -10,26 +10,92 @@
 
       h1 {
         font-size: 15px;
+        align-self: left;
       }
 
       #container {
         align-items: center;
-        display: flex;
+        display: none;
         justify-content: center;
         flex-direction: column;
       }
+
+      .waiting-label {
+        color: grey;
+      }
+      .expired-note {
+        color: red;
+      }
+      .note-label {
+        color: grey;
+        font-size: 11px;
+      }
+
+      #sub1 {
+        display: initial;
+      }
+      #note-label {
+        display: none;
+        align-self: left;
+        margin-bottom: 7px;
+      }
+      #sub2 {
+        display: none;
+      }
+      #sub3 {
+        margin-top: 7px;
+        display: none;
+      }
+      #sub4 {
+        margin-top: 5px;
+        display: none;
+      }
+      #trial-page {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+      #trial-page label {
+        color: grey;
+        font-size: 11px;
+        margin: 10px;
+      }
     </style>
 
+    <script src="buy.js"></script>
+    <script src="constants.js"></script>
+    <script src="storage.js"></script>
+    <script src="api.js"></script>
     <script src="popup.js"></script>
   </head>
 
   <body>
-    <h1>Exception list</h1>
     <div id="container">
-      <div>
+      <h1>Exception list</h1>
+      <div id="sub1">
+        <label class="waiting-label">Processing...</label>
+      </div>
+      <div id="note-label">
+        <label class="note-label">Enter <i>twitteruser1</i>, <i>twitteruser2</i>. Case-insensitive.</label>
+      </div>
+      <div id="sub2">
         <textarea rows="10" cols="50" id="textarea-exceptions" autofocus></textarea>
       </div>
-      <div><input type="button" value="Save" id="save-button"/></div>
+      <div id="sub3">
+        <input type="button" value="Save" id="save-button"/>
+      </div>
+      <div id="sub4">
+        <label class="expired-note">Trial period has ended. You can still use it! But your <b>exception list</b> is limited to first 3 users.</br>Purchase <a href="#" id="buy-lifetime">here</a> to fully use it for lifetime without limitation.</label>
+      </div>
+    </div>
+    <div id="trial-page">
+      <h1>Free Trial Period</h1>
+      <label>protik comes with free-trial period of 15 days.<br>Whenever trial period ends, you can still using it<br>as long as you want just that your <b>exception list</b> will be limited<br>to take effect only first 3 Twitter handles.<br><br>
+      Note that protik won't remove your saved exception list.<br>
+      Purchase <a href="#" id="buy-lifetime2">here</a> to fully use it for lifetime without limitation.
+      </label>
+      <input type="button" value="Back" id="back-button"/>
     </div>
   </body>
 </html>

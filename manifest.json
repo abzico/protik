@@ -2,9 +2,10 @@
   "manifest_version": 2,
 
   "name": "protik",
-  "description": "This extension protects your flow of productivity from other people's views in Twitter feeds. This extension is also open source at https://github.com/abzico/protik. If you find it useful, please consider making a small donation directly to me at https://github.com/haxpor/donate.",
+  "short_name": "protik",
+  "description": "This extension protects your flow of productivity from other people's views in Twitter feeds.",
   "author": "Wasin Thonkaew",
-  "version": "0.1.0",
+  "version": "0.2.2.2",
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",
@@ -15,19 +16,36 @@
     "512": "icon512.png"
   },
   "browser_action": {
-    "default_icon": "icon.png",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "64": "icon64.png"
+    },
     "default_popup": "popup.html",
     "default_title": "Click to configure protik"
   },
-  "content_scripts" : [
+  "background": {
+    "scripts": [ "background.js" ]
+  },
+  "content_scripts": [
     {
-      "js": ["inject.js"],
-      "matches": ["https://twitter.com/*"]
+      "js": ["buy.js", "constants.js", "storage.js", "api.js", "inject.js"],
+      "matches": [ "https://twitter.com/*" ]
     }
- ],
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgal5a2NCImNLj5jaLOSrckEFGNNZMMyYBHKg3W8xNgLg7tx6LJJu8vgQDpTu3O87jVvpJ3vkojQT4ap3PXo5TUxj8S0vIz0nMIoER+1qDa+8IG58xpRu4sAedxBq84vgS5rbkphIptK61t8Vtaj+2NX4FY36aiWnTa0mwI57toxW7+79KwUfVhzt+iJwMKeSK+yD9J7zfYriNAGlVWbw485IB3XEPLM1M0s1g6dczN3/Md2e/7Ir6KzroLDv34Hcs6TJ6Aih4WbMoHH3+vvKXvkMB9TOl9xBCMneZJ3/egulswmNtj+DvohtElss8uEiZaDJi9OLyknAaZKp/eF+PwIDAQAB",
+  "oauth2": {
+    "client_id": "189524929570-cpr5nr7hnd2daqqhdcvqf6m8qlgmerl7.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/chromewebstore.readonly"
+    ]
+  },
   "permissions": [
-    "activeTab",
+    "identity",
     "storage",
-    "tabs"
+    "tabs",
+    "webNavigation",
+    "https://twitter.com/*",
+    "https://www.googleapis.com/"
   ]
 }
