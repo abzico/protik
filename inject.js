@@ -148,6 +148,23 @@ if (ownerHandle != null) {
       // buy lifetie iap
       buyLifetimeIAP(function() {
         console.log('user cancelled iap widow, or failed to buy');
+
+        // fix (workaround): issue of successfully buying not return in success path
+        verifyPurchasedLifetimeIAP(function(purchased) {
+          // save status to storage
+          saveValueToStorage(constants.storageKeys.kUserPurchasedLifetimeIAP, purchased, function() {
+            console.log('cant save purchasing status to storage');
+          }, function() {
+            console.log('saved purchasing status to storage.');
+          });
+
+          // update limit only if purchase successfully
+          if (purchased) {
+            volatileIsGetRidLimit = false;
+            // immediately getRid()
+            getRid();
+          }
+        });
       }, function(response) {
         console.log('bought iap:', response);
 
