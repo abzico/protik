@@ -22,6 +22,14 @@ It only works at main page of twitter at [https://twitter.com](https://twitter.c
 
 If you find this program useful, please kindly consider [donate](https://github.com/haxpor/donate).
 
+# Lastly
+
+Read more about it at [wiki.abzi.co/protik](https://wiki.abzi.co/protik).
+
+Available now at [Chrome webstore](https://chrome.google.com/webstore/detail/protik/hhhbcbooldghbplkblcdldokgnlcconf)
+
+[![protik on chrome webstore](ChromeWebStore_Badge_v2_340x96.png)](https://chrome.google.com/webstore/detail/protik/hhhbcbooldghbplkblcdldokgnlcconf)
+
 # License
 
 Under GPLv3 license. See [LICENSE](https://github.com/abzico/protik/blob/master/LICENSE).
