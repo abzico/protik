@@ -51,6 +51,16 @@ function loadUserPurchasedLifetimeIAP(callback) {
 }
 
 /**
+ * Load user's refresh-page-when-save status, then return via callback.
+ * @param {function} callback Callback function in function(refresh) { ... }. Return null if there's error or target key cannot be found.
+ */
+function loadUserRefreshPageWhenSave(callback) {
+  chrome.storage.sync.get(constants.storageKeys.kUserRefreshPageWhenSave, function(items) {
+    callback(chrome.runtime.lastError ? null : items[constants.storageKeys.kUserRefreshPageWhenSave]);
+  });
+}
+
+/**
  * Save data to storage.
  * @param {string} key Key of data
  * @param {any} Value Data to be saved to storage.

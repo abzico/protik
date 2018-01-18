@@ -39,6 +39,9 @@
         align-self: left;
         margin-bottom: 7px;
       }
+      #note-label input {
+        margin-left: 0px;
+      }
       #sub2 {
         display: none;
       }
@@ -78,7 +81,8 @@
         <label class="waiting-label">Processing...</label>
       </div>
       <div id="note-label">
-        <label class="note-label">Enter <i>twitteruser1</i>, <i>twitteruser2</i>. Case-insensitive.</label>
+        <label class="note-label">Enter <i>twitteruser1</i>, <i>twitteruser2</i>. Case-insensitive.</label><br>
+        <input type="checkbox" id="refresh-when-save-button" value="refresh-when-save"><label class="note-label">Refresh page when save</label>
       </div>
       <div id="sub2">
         <textarea rows="10" cols="50" id="textarea-exceptions" autofocus></textarea>

@@ -1,7 +1,7 @@
 // dependency: constants.js, storage.js, api.js
 
 var textArea = null;
-var exceptionList = [];
+var isRefreshPageWhenSave = true;
 var isUserHasLifetimeIAP = false; // caching
 
 /**
@@ -73,8 +73,10 @@ function saveExceptions() {
     log('successfully saved exceptions to storage');
     // now send message to notify all twitter tabs
     sendMessageToAllContentScripts(constants.messageKey.kExceptions, strippedTextAreaValue, function() {
-      // every save button clicked, we refresh the page to make it take effect
-      chrome.tabs.executeScript(null, {code: 'window.location.reload();'});
+      // refresh the page if such option is set
+      if (isRefreshPageWhenSave) {
+        chrome.tabs.executeScript(null, {code: 'window.location.reload();'});
+      }
       window.close();
     });
   })
@@ -132,8 +134,9 @@ function verifyLicense(licenseObject) {
   if (licenseObject.result && licenseObject.accessLevel == "FULL") {
     log("Fully paid && properly licensed");
 
-    saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true);
-    sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+    saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true, null, function() {
+      sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+    });
 
     return true;
   }
@@ -158,16 +161,18 @@ function verifyLicense(licenseObject) {
       });
       log("Free trial, still within trial period: " + daysLeft + " days left");
 
-      saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true);
-      sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+      saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true, null, function() {
+        sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+      });
 
       return true;
     } else {
       // trial period expired
       log("Free trial, trial period expired");
       
-      saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false);
-      sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+      saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false, null, function() {
+        sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+      });
 
       return false;
     }
@@ -176,7 +181,9 @@ function verifyLicense(licenseObject) {
     // no license issued
     // there might be about user didn't log in account or some sort (guess), but we just treat it as limited functionality here
     log("No license ever issued");
-    saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false);
+    saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false, null, function() {
+      sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+    });
     return false;
   }
 }
@@ -264,6 +271,12 @@ function goBackFromTrialPage() {
 function goToTrialPage() {
   document.getElementById('container').style.display = 'none';
   document.getElementById('trial-page').style.display = 'flex';
+}
+
+function refreshPageWhenSaveToggle() {
+  var button = document.getElementById('refresh-when-save-button');
+  isRefreshPageWhenSave = button.checked;
+  saveValueToStorage(constants.storageKeys.kUserRefreshPageWhenSave, button.checked);
 }
 
 /**
@@ -366,6 +379,17 @@ function preFlow() {
       textArea.value = ""
     }
   });
+  // load refresh-when-save status
+  loadUserRefreshPageWhenSave(function(refresh) {
+    if (refresh != null) {
+      document.getElementById('refresh-when-save-button').checked = refresh;
+      isRefreshPageWhenSave = refresh;
+    }
+    else {
+      document.getElementById('refresh-when-save-button').checked = true;
+      isRefreshPageWhenSave = true;
+    }
+  });
 
   // listen to save-button click to save exception to storage
   document.getElementById('save-button').addEventListener('click', saveExceptions, false);
@@ -374,6 +398,8 @@ function preFlow() {
   document.getElementById('buy-lifetime2').addEventListener('click', sendMessageIntendToBuyIAP, false);
   // listen to back button of trial-page
   document.getElementById('back-button').addEventListener('click', goBackFromTrialPage, false);
+  // listn to refresh-when-save button
+  document.getElementById('refresh-when-save-button').addEventListener('click', refreshPageWhenSaveToggle, false);
 
   // begin the flow
   flow();
