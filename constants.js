@@ -17,7 +17,7 @@ var constants = {
   },
 
   sysSettings: {
-    debug: true
+    debug: false
   },
 
   messageKey: {
