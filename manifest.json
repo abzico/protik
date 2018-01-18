@@ -29,7 +29,7 @@
   },
   "content_scripts": [
     {
-      "js": ["buy.js", "constants.js", "storage.js", "api.js", "inject.js"],
+      "js": ["buy.js", "constants.js", "logger.js", "storage.js", "api.js", "inject.js"],
       "matches": [ "https://twitter.com/*" ]
     }
   ],

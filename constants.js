@@ -16,6 +16,10 @@ var constants = {
     kExceptionsLimit: 3 // number of users limit for exception list when trial expired
   },
 
+  sysSettings: {
+    debug: true
+  },
+
   messageKey: {
     kExceptions: 'msg-exception',
     kIntendToBuyIAP: 'msg-intend-buyiap',

@@ -13,7 +13,6 @@ if (ownerHandleDom != null) {
 
 // get rid of tweets according to current limitation set
 function getRid() {
-  console.log('getRid() caled');
   // query dom element (twitter card) that is not you, yes, only show your tweets
   var tweets = document.querySelectorAll('div.tweet');
   for (var i=0; i <tweets.length; i++) {
@@ -34,7 +33,6 @@ function getRid() {
 // check whether input handle matches any of exceptions
 function matchHandle(handle) {
   var limit = volatileIsGetRidLimit ? constants.trialSettings.kExceptionsLimit : exceptionArray.length;
-  console.log(limit);
   for (var i=0; i<limit; i++) {
     if (handle == exceptionArray[i]) {
       return true;
@@ -63,13 +61,13 @@ function updateGetRidLimitStatus() {
       // no limit
       volatileIsGetRidLimit = false;
       // no need to check another one as this has higher priority
-      console.log('volatileIsGetRidLimit 1: ' + volatileIsGetRidLimit);
+      log('volatileIsGetRidLimit 1: ' + volatileIsGetRidLimit);
     }
     else if (!purchased) {
       // load kUserVerifiedLicense
       loadUserVerifiedLicense(function(verified) {
         volatileIsGetRidLimit = verified ? false : true;
-        console.log('volatileIsGetRidLimit 2: ' + volatileIsGetRidLimit);
+        log('volatileIsGetRidLimit 2: ' + volatileIsGetRidLimit);
       });
     }
   });
@@ -132,7 +130,7 @@ if (ownerHandle != null) {
 
   // listen to message sent by popup script
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log(request);
+    log(request);
     // exception data
     if (request.key != null && request.key == constants.messageKey.kExceptions) {
       //sendResponse({ack: 'i got it!'});
@@ -149,15 +147,15 @@ if (ownerHandle != null) {
 
       // buy lifetie iap
       buyLifetimeIAP(function() {
-        console.log('user cancelled iap widow, or failed to buy');
+        log('user cancelled iap widow, or failed to buy');
 
         // fix (workaround): issue of successfully buying not return in success path
         verifyPurchasedLifetimeIAP(function(purchased) {
           // save status to storage
           saveValueToStorage(constants.storageKeys.kUserPurchasedLifetimeIAP, purchased, function() {
-            console.log('cant save purchasing status to storage');
+            log('cant save purchasing status to storage');
           }, function() {
-            console.log('saved purchasing status to storage.');
+            log('saved purchasing status to storage.');
           });
 
           // update limit only if purchase successfully
@@ -168,13 +166,13 @@ if (ownerHandle != null) {
           }
         });
       }, function(response) {
-        console.log('bought iap:', response);
+        log('bought iap:', response);
 
         // save status to storage
         saveValueToStorage(constants.storageKeys.kUserPurchasedLifetimeIAP, true, function() {
-          console.log('cant save purchasing status to storage');
+          log('cant save purchasing status to storage');
         }, function() {
-          console.log('saved purchasing status to storage.');
+          log('saved purchasing status to storage.');
         });
 
         // for safety as if saving to storage might have error

@@ -55,7 +55,7 @@ function sendMessageToFirstFoundContentScripts(key, message, callback=null) {
       chrome.tabs.sendMessage(tab.id, msg);
     }
     else {
-      console.log('cannot find any twitter tabs');
+      log('cannot find any twitter tabs');
     }
 
     if (callback) {
@@ -68,9 +68,9 @@ function sendMessageToFirstFoundContentScripts(key, message, callback=null) {
 function saveExceptions() {
   var strippedTextAreaValue = stripCommentLines(textArea.value);
   saveValueToStorage(constants.storageKeys.kExceptionTwitterHandlesKey, strippedTextAreaValue, function() {
-    console.log('failed to save exceptions to storage');
+    log('failed to save exceptions to storage');
   }, function() {
-    console.log('successfully saved exceptions to storage');
+    log('successfully saved exceptions to storage');
     // now send message to notify all twitter tabs
     sendMessageToAllContentScripts(constants.messageKey.kExceptions, strippedTextAreaValue, function() {
       // every save button clicked, we refresh the page to make it take effect
@@ -130,7 +130,7 @@ function disableFunctioningUI() {
  */
 function verifyLicense(licenseObject) {
   if (licenseObject.result && licenseObject.accessLevel == "FULL") {
-    console.log("Fully paid && properly licensed");
+    log("Fully paid && properly licensed");
 
     saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true);
     sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
@@ -156,7 +156,7 @@ function verifyLicense(licenseObject) {
       document.getElementById('days-left-anchor').addEventListener('click', function() {
         goToTrialPage();
       });
-      console.log("Free trial, still within trial period: " + daysLeft + " days left");
+      log("Free trial, still within trial period: " + daysLeft + " days left");
 
       saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true);
       sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
@@ -164,7 +164,7 @@ function verifyLicense(licenseObject) {
       return true;
     } else {
       // trial period expired
-      console.log("Free trial, trial period expired");
+      log("Free trial, trial period expired");
       
       saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false);
       sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
@@ -175,7 +175,7 @@ function verifyLicense(licenseObject) {
   else {
     // no license issued
     // there might be about user didn't log in account or some sort (guess), but we just treat it as limited functionality here
-    console.log("No license ever issued");
+    log("No license ever issued");
     saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false);
     return false;
   }
@@ -189,18 +189,18 @@ function requestLicenseFlow(token) {
       // make a request checking for license
       requestLicense(token,
         function() {
-          console.log('failed to request for license');
+          log('failed to request for license');
         },
         function(licenseObject) {
-          console.log('got license object:', licenseObject);
+          log('got license object:', licenseObject);
 
           // save license to storage
           saveValueToStorage(constants.storageKeys.kUserLicense, licenseObject,
             function() {
-              console.log('failed to save license object to storage.');
+              log('failed to save license object to storage.');
             },
             function() {
-              console.log('successfully saved license object to storage.');
+              log('successfully saved license object to storage.');
 
               // check whether trial perid is expired
               if (!verifyLicense(licenseObject)) {
@@ -252,7 +252,7 @@ function sendMessageIntendToBuyIAP() {
   // send message to notify content script of the first twitter tab we found to initiaite the buying flow by executing API
   // if initiate here, buying popup will be closed immediately as popup script ends because its popup window automatically closed
   sendMessageToFirstFoundContentScripts(constants.messageKey.kIntendToBuyIAP, null, function() {
-    console.log('sent message successfully');
+    log('sent message successfully');
   });
 }
 
@@ -277,17 +277,17 @@ function verifyPurchasedLifetimeIAPFlow(ifNotPurchasedCallback=null) {
       // (higher priority) check lifetime iap first
       // verify purchasing of lifetime iap
       verifyPurchasedLifetimeIAP(function(purchased) {
-        console.log(purchased ? "user purchased lifetime iap" : "user not yet purchase lifetime iap");
+        log(purchased ? "user purchased lifetime iap" : "user not yet purchase lifetime iap");
         
         // save to storage
         saveValueToStorage(constants.storageKeys.kUserPurchasedLifetimeIAP, purchased, function() {
-          console.log('failed to save lifetime iap status to storage.');
+          log('failed to save lifetime iap status to storage.');
         }, function() {
-          console.log('successfully saved lifetime iap status to storage');
+          log('successfully saved lifetime iap status to storage');
 
           // notify to content scripts
           sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null, function() {
-            console.log('notified to content scripts for updated purchased iAP flag');
+            log('notified to content scripts for updated purchased iAP flag');
           });
         });
 
@@ -298,7 +298,7 @@ function verifyPurchasedLifetimeIAPFlow(ifNotPurchasedCallback=null) {
         else {
           // enable UI
           enableFunctioningUI();
-          console.log('enabled ui');
+          log('enabled ui');
         }
       });
     }
@@ -309,7 +309,7 @@ function verifyPurchasedLifetimeIAPFlow(ifNotPurchasedCallback=null) {
     else if (cached_purchased) {
       // enable UI
       enableFunctioningUI();
-      console.log('enabled ui');
+      log('enabled ui');
     }
   });
 }
@@ -329,17 +329,17 @@ function flow() {
     // then ask for permission from user
     else {
       askForUserOAuthTokenButMightTriggerAllowPermPopupIfFailed(function() {
-        console.log('failed to get token both silently and explicityly');
+        log('failed to get token both silently and explicityly');
       }, function(token) {
-        console.log('got token!');
+        log('got token!');
 
         // save token to storage
         saveValueToStorage(constants.storageKeys.kUserOAuthToken, token,
           function() {
-            console.log('failed to save token to storage');
+            log('failed to save token to storage');
           },
           function() {
-            console.log('successfully saved token to storage');
+            log('successfully saved token to storage');
             // begin verifying lifetime iap flow
             verifyPurchasedLifetimeIAPFlow(function() {
               // begin request license flow
