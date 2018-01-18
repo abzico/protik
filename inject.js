@@ -13,6 +13,7 @@ if (ownerHandleDom != null) {
 
 // get rid of tweets according to current limitation set
 function getRid() {
+  console.log('getRid() caled');
   // query dom element (twitter card) that is not you, yes, only show your tweets
   var tweets = document.querySelectorAll('div.tweet');
   for (var i=0; i <tweets.length; i++) {
@@ -33,6 +34,7 @@ function getRid() {
 // check whether input handle matches any of exceptions
 function matchHandle(handle) {
   var limit = volatileIsGetRidLimit ? constants.trialSettings.kExceptionsLimit : exceptionArray.length;
+  console.log(limit);
   for (var i=0; i<limit; i++) {
     if (handle == exceptionArray[i]) {
       return true;
@@ -61,13 +63,13 @@ function updateGetRidLimitStatus() {
       // no limit
       volatileIsGetRidLimit = false;
       // no need to check another one as this has higher priority
-      console.log('volatileIsGetRidLimit: ' + volatileIsGetRidLimit);
+      console.log('volatileIsGetRidLimit 1: ' + volatileIsGetRidLimit);
     }
-    else {
+    else if (!purchased) {
       // load kUserVerifiedLicense
       loadUserVerifiedLicense(function(verified) {
         volatileIsGetRidLimit = verified ? false : true;
-        console.log('volatileIsGetRidLimit: ' + volatileIsGetRidLimit);
+        console.log('volatileIsGetRidLimit 2: ' + volatileIsGetRidLimit);
       });
     }
   });

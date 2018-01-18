@@ -131,6 +131,10 @@ function disableFunctioningUI() {
 function verifyLicense(licenseObject) {
   if (licenseObject.result && licenseObject.accessLevel == "FULL") {
     console.log("Fully paid && properly licensed");
+
+    saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true);
+    sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+
     return true;
   }
   else if(licenseObject.result && licenseObject.accessLevel == "FREE_TRIAL") {
@@ -153,10 +157,18 @@ function verifyLicense(licenseObject) {
         goToTrialPage();
       });
       console.log("Free trial, still within trial period: " + daysLeft + " days left");
+
+      saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true);
+      sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+
       return true;
     } else {
       // trial period expired
       console.log("Free trial, trial period expired");
+      
+      saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false);
+      sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+
       return false;
     }
   }
@@ -164,6 +176,7 @@ function verifyLicense(licenseObject) {
     // no license issued
     // there might be about user didn't log in account or some sort (guess), but we just treat it as limited functionality here
     console.log("No license ever issued");
+    saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false);
     return false;
   }
 }
