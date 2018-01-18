@@ -73,6 +73,8 @@ function saveExceptions() {
     console.log('successfully saved exceptions to storage');
     // now send message to notify all twitter tabs
     sendMessageToAllContentScripts(constants.messageKey.kExceptions, strippedTextAreaValue, function() {
+      // every save button clicked, we refresh the page to make it take effect
+      chrome.tabs.executeScript(null, {code: 'window.location.reload();'});
       window.close();
     });
   })
