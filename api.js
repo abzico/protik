@@ -26,8 +26,8 @@ function askForUserOAuthTokenButMightTriggerAllowPermPopupIfFailed(failureCallba
   chrome.identity.getAuthToken({'interactive': false}, function(token) {
     // if fail to get, then we ask user to allow permission
     if (token == null || chrome.runtime.lastError) {
-      console.log(chrome.runtime.lastError);
-      console.log('we need to explicitly ask for token');
+      log(chrome.runtime.lastError);
+      log('we need to explicitly ask for token');
       
       chrome.identity.getAuthToken({'interactive': true}, function(_token) {
         // if failed
@@ -87,17 +87,17 @@ function requestLicense(token, failureCallback=null, completeCallback=null) {
       removeCachedOAuthToken(token, function() {
         // request a new token
         askForUserOAuthTokenButMightTriggerAllowPermPopupIfFailed(function() {
-          console.log('failed to get a new token after previous one is invalid');
+          log('failed to get a new token after previous one is invalid');
         }, function(new_token) {
-          console.log('got a new token after previous one is invalid: ' + new_token);
+          log('got a new token after previous one is invalid: ' + new_token);
 
           // save token to storage
           saveValueToStorage(constants.storageKeys.kUserOAuthToken, new_token,
             function() {
-              console.log('failed to save token to storage');
+              log('failed to save token to storage');
             },
             function() {
-              console.log('successfully saved token to storage');
+              log('successfully saved token to storage');
             }
           );
 
@@ -129,7 +129,7 @@ function buyLifetimeIAP(failure=null, success=null) {
       if (success) success(response);
     },
     'failure': function() {
-      if (chrome.runtime.lastError) console.log(chrome.runtime.lastError);
+      if (chrome.runtime.lastError) log(chrome.runtime.lastError);
       if (failure) failure();
     }
   });
@@ -144,7 +144,7 @@ function verifyPurchasedLifetimeIAP(callback=null) {
   google.payments.inapp.getPurchases({
     'parameters': {'env': 'prod'},
     'success': function(response) {
-      console.log(response);
+      log(response);
 
       // if there's some purchase list to check
       if (response.response.details.length > 0) {
