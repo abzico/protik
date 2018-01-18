@@ -7,7 +7,8 @@ var constants = {
     kUserOAuthToken: 'userOAuthToken',
     kUserLicense: 'userLicense',
     kUserVerifiedLicense: 'userVerifiedLicense',
-    kUserPurchasedLifetimeIAP: 'userPurchasedLifetimeIAP'
+    kUserPurchasedLifetimeIAP: 'userPurchasedLifetimeIAP',
+    kUserRefreshPageWhenSave: 'userRefreshPageWhenSave'
   },
 
   trialSettings: {

@@ -1,7 +1,7 @@
 // dependency: constants.js, storage.js, api.js
 
 var textArea = null;
-var exceptionList = [];
+var isRefreshPageWhenSave = true;
 var isUserHasLifetimeIAP = false; // caching
 
 /**
@@ -73,8 +73,10 @@ function saveExceptions() {
     log('successfully saved exceptions to storage');
     // now send message to notify all twitter tabs
     sendMessageToAllContentScripts(constants.messageKey.kExceptions, strippedTextAreaValue, function() {
-      // every save button clicked, we refresh the page to make it take effect
-      chrome.tabs.executeScript(null, {code: 'window.location.reload();'});
+      // refresh the page if such option is set
+      if (isRefreshPageWhenSave) {
+        chrome.tabs.executeScript(null, {code: 'window.location.reload();'});
+      }
       window.close();
     });
   })
@@ -271,6 +273,12 @@ function goToTrialPage() {
   document.getElementById('trial-page').style.display = 'flex';
 }
 
+function refreshPageWhenSaveToggle() {
+  var button = document.getElementById('refresh-when-save-button');
+  isRefreshPageWhenSave = button.checked;
+  saveValueToStorage(constants.storageKeys.kUserRefreshPageWhenSave, button.checked);
+}
+
 /**
  * Begin verifying purhcased lifetime iAP flow.
  * @param {function} ifNotPurchasedCallback (optional) Callback if user didn't purchase lifetime iAP yet, then after finishes verifying iAP it will call this callback.
@@ -371,6 +379,17 @@ function preFlow() {
       textArea.value = ""
     }
   });
+  // load refresh-when-save status
+  loadUserRefreshPageWhenSave(function(refresh) {
+    if (refresh != null) {
+      document.getElementById('refresh-when-save-button').checked = refresh;
+      isRefreshPageWhenSave = refresh;
+    }
+    else {
+      document.getElementById('refresh-when-save-button').checked = true;
+      isRefreshPageWhenSave = true;
+    }
+  });
 
   // listen to save-button click to save exception to storage
   document.getElementById('save-button').addEventListener('click', saveExceptions, false);
@@ -379,6 +398,8 @@ function preFlow() {
   document.getElementById('buy-lifetime2').addEventListener('click', sendMessageIntendToBuyIAP, false);
   // listen to back button of trial-page
   document.getElementById('back-button').addEventListener('click', goBackFromTrialPage, false);
+  // listn to refresh-when-save button
+  document.getElementById('refresh-when-save-button').addEventListener('click', refreshPageWhenSaveToggle, false);
 
   // begin the flow
   flow();
