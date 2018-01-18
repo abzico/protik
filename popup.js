@@ -132,8 +132,9 @@ function verifyLicense(licenseObject) {
   if (licenseObject.result && licenseObject.accessLevel == "FULL") {
     log("Fully paid && properly licensed");
 
-    saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true);
-    sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+    saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true, null, function() {
+      sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+    });
 
     return true;
   }
@@ -158,16 +159,18 @@ function verifyLicense(licenseObject) {
       });
       log("Free trial, still within trial period: " + daysLeft + " days left");
 
-      saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true);
-      sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+      saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, true, null, function() {
+        sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+      });
 
       return true;
     } else {
       // trial period expired
       log("Free trial, trial period expired");
       
-      saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false);
-      sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+      saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false, null, function() {
+        sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+      });
 
       return false;
     }
@@ -176,7 +179,9 @@ function verifyLicense(licenseObject) {
     // no license issued
     // there might be about user didn't log in account or some sort (guess), but we just treat it as limited functionality here
     log("No license ever issued");
-    saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false);
+    saveValueToStorage(constants.storageKeys.kUserVerifiedLicense, false, null, function() {
+      sendMessageToAllContentScripts(constants.messageKey.kNotifyUpdatedGetRidLimit, null);
+    });
     return false;
   }
 }
